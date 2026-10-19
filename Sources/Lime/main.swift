@@ -6,13 +6,26 @@ import LimeCore
 if let flag = CommandLine.arguments.firstIndex(of: "--snapshot"), flag + 1 < CommandLine.arguments.count {
     let dark = CommandLine.arguments.dropFirst(flag + 2).first == "dark"
     let side = WheelPanel.side
-    let backdrop = NSView(frame: NSRect(x: 0, y: 0, width: side, height: side))
+    let backdrop = NSImageView(frame: NSRect(x: 0, y: 0, width: side, height: side))
     backdrop.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
+    // A wallpaper-like backdrop so the glass has something to show through.
+    backdrop.image = NSImage(size: backdrop.bounds.size, flipped: false) { rect in
+        let colors: [NSColor] = dark
+            ? [NSColor(srgbRed: 0.10, green: 0.12, blue: 0.30, alpha: 1), NSColor(srgbRed: 0.35, green: 0.10, blue: 0.35, alpha: 1)]
+            : [NSColor(srgbRed: 0.45, green: 0.70, blue: 0.98, alpha: 1), NSColor(srgbRed: 0.98, green: 0.62, blue: 0.70, alpha: 1)]
+        NSGradient(colors: colors)?.draw(in: rect, angle: -45)
+        for (x, y, r, c) in [(0.25, 0.7, 90.0, NSColor.systemOrange), (0.75, 0.3, 110.0, NSColor.systemTeal)] {
+            c.withAlphaComponent(0.55).setFill()
+            NSBezierPath(ovalIn: NSRect(x: rect.width * x - r, y: rect.height * y - r, width: r * 2, height: r * 2)).fill()
+        }
+        return true
+    }
+    backdrop.imageScaling = .scaleAxesIndependently
     let disc = NSBox(frame: NSRect(x: 20, y: 20, width: WheelPanel.discRadius * 2, height: WheelPanel.discRadius * 2))
     disc.boxType = .custom
     disc.cornerRadius = WheelPanel.discRadius
     disc.borderWidth = 0
-    disc.fillColor = dark ? NSColor(white: 0.17, alpha: 0.96) : NSColor(white: 0.96, alpha: 0.96)
+    disc.fillColor = dark ? NSColor(white: 0.05, alpha: 0.35) : NSColor(white: 1, alpha: 0.3)
     backdrop.addSubview(disc)
     let view = WheelView(frame: backdrop.bounds)
     view.items = ["jpg", "heic", "tiff", "gif", "bmp", "webp", "pdf"].map { WheelItem(.convert($0)) }

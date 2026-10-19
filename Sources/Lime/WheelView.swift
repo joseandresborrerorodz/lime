@@ -28,9 +28,6 @@ struct WheelItem {
 enum Palette {
     static let accent = NSColor(calibratedRed: 0.60, green: 0.86, blue: 0.16, alpha: 1)
     static let accentDeep = NSColor(calibratedRed: 0.42, green: 0.76, blue: 0.10, alpha: 1)
-    static var segment: NSColor { .labelColor.withAlphaComponent(0.035) }
-    static var segmentEdge: NSColor { .labelColor.withAlphaComponent(0.08) }
-    static var hairline: NSColor { .labelColor.withAlphaComponent(0.14) }
 }
 
 /// Geometry for a ring of slices with rounded corners and constant-width gaps.
@@ -162,27 +159,22 @@ final class WheelView: NSView {
                                   start: mid - half, end: mid + half, gap: Self.gap, corner: Self.cornerRadius)
     }
 
+    private var isDark: Bool { effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua }
+
     private func drawSegment(_ index: Int) {
         let path = segmentPath(index)
         let selected = index == highlighted
         if selected {
             NSGraphicsContext.saveGraphicsState()
             let glow = NSShadow()
-            glow.shadowColor = Palette.accentDeep.withAlphaComponent(0.45)
-            glow.shadowBlurRadius = 10
+            glow.shadowColor = Palette.accentDeep.withAlphaComponent(0.5)
+            glow.shadowBlurRadius = 12
             glow.set()
-            Palette.accent.setFill()
+            Palette.accent.withAlphaComponent(0.6).setFill()
             path.fill()
             NSGraphicsContext.restoreGraphicsState()
-            NSGradient(starting: NSColor.white.withAlphaComponent(0.28), ending: .clear)?
-                .draw(in: path, angle: midAngle(index) + 180)
-        } else {
-            Palette.segment.setFill()
-            path.fill()
-            Palette.segmentEdge.setStroke()
-            path.lineWidth = 0.5
-            path.stroke()
         }
+        Glass.drawTile(path, tint: selected ? Palette.accent : nil, dark: isDark)
         drawLabel(for: index, selected: selected)
     }
 
@@ -217,11 +209,7 @@ final class WheelView: NSView {
     private func drawHub() {
         let radius = Self.innerRadius - 8
         let hub = NSBezierPath(ovalIn: NSRect(x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2))
-        NSColor.labelColor.withAlphaComponent(0.02).setFill()
-        hub.fill()
-        Palette.hairline.setStroke()
-        hub.lineWidth = 0.5
-        hub.stroke()
+        Glass.drawTile(hub, tint: nil, dark: isDark)
 
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
@@ -324,14 +312,13 @@ final class WheelPanel: NSPanel {
             let glass = NSGlassEffectView(frame: frame)
             glass.cornerRadius = frame.width / 2
             glass.style = .clear
-            glass.alphaValue = 0.7
             return glass
         }
         let material = NSVisualEffectView(frame: frame)
         material.material = .hudWindow
         material.blendingMode = .behindWindow
         material.state = .active
-        material.alphaValue = 0.65
+        material.alphaValue = 0.8
         material.maskImage = NSImage(size: frame.size, flipped: false) { rect in
             NSColor.black.setFill()
             NSBezierPath(ovalIn: rect).fill()
