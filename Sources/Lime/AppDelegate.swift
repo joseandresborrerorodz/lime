@@ -7,6 +7,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let watcher = DragWatcher()
     private let panel = WheelPanel()
     private let hud = HUD()
+    private let welcome = WelcomeWindowController()
     private let work = DispatchQueue(label: "lime.engine", qos: .userInitiated)
     private var capabilities = Capabilities.detect()
     private var files: [URL] = []
@@ -31,6 +32,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) { self?.panel.dismiss() }
         }
         watcher.start()
+
+        welcome.onConvertFiles = { [weak self] in self?.chooseFiles() }
+        if !UserDefaults.standard.bool(forKey: "hasShownWelcome") {
+            UserDefaults.standard.set(true, forKey: "hasShownWelcome")
+            welcome.show()
+        }
+    }
+
+    /// Opening Lime again (Finder, Spotlight, `open`) shows the welcome window.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        welcome.show()
+        return true
     }
 
     // MARK: Wheel
@@ -140,7 +153,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     /// Keyboard/menu path to the same operations, for when dragging isn't handy.
-    @objc private func chooseFiles() {
+    @objc func chooseFiles() {
         NSApp.activate(ignoringOtherApps: true)
         let open = NSOpenPanel()
         open.allowsMultipleSelection = true

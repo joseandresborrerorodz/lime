@@ -57,6 +57,14 @@ enum LimeMark {
         NSGraphicsContext.restoreGraphicsState()
     }
 
+    /// Full-colour mark as an image, for windows.
+    static func colorImage(size: CGFloat) -> NSImage {
+        NSImage(size: NSSize(width: size, height: size), flipped: false) { rect in
+            drawColor(in: rect)
+            return true
+        }
+    }
+
     /// Monochrome template image for the menu bar.
     static func menuBarImage(size: CGFloat = 18) -> NSImage {
         let image = NSImage(size: NSSize(width: size, height: size), flipped: false) { rect in
