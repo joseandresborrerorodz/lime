@@ -5,6 +5,32 @@ import Foundation
 enum MediaConversion {
     static let quiet = ["-hide_banner", "-loglevel", "error", "-nostdin", "-y"]
 
+    private static let encoderCache = NSCache<NSString, NSSet>()
+
+    /// Encoder names this ffmpeg build offers (builds differ, e.g. Homebrew has no libvorbis).
+    static func encoders(_ ffmpeg: URL) -> Set<String> {
+        if let cached = encoderCache.object(forKey: ffmpeg.path as NSString) as? Set<String> { return cached }
+        let listing = ProcessRunner.output(ffmpeg, ["-hide_banner", "-encoders"]) ?? ""
+        let names = Set(listing.split(separator: "\n").compactMap { line -> String? in
+            let fields = line.split(separator: " ")
+            return fields.count >= 2 && fields[0].count == 6 ? String(fields[1]) : nil
+        })
+        encoderCache.setObject(names as NSSet, forKey: ffmpeg.path as NSString)
+        return names
+    }
+
+    /// Ogg prefers Vorbis; without libvorbis, Opus in an Ogg container plays almost everywhere.
+    static func oggArguments(_ capabilities: Capabilities) -> [String] {
+        if let ffmpeg = capabilities.ffmpeg, encoders(ffmpeg).contains("libvorbis") {
+            return ["-vn", "-c:a", "libvorbis", "-q:a", "5"]
+        }
+        return ["-vn", "-c:a", "libopus", "-b:a", "160k"]
+    }
+
+    static func encoderArguments(for target: String, capabilities: Capabilities) -> [String] {
+        target == "ogg" ? oggArguments(capabilities) : encoderArguments(for: target)
+    }
+
     static func encoderArguments(for target: String) -> [String] {
         let h264 = ["-c:v", "h264_videotoolbox", "-q:v", "65", "-pix_fmt", "yuv420p",
                     "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2"]
@@ -19,7 +45,6 @@ enum MediaConversion {
         case "wav", "caf": return ["-vn", "-c:a", "pcm_s16le"]
         case "aiff": return ["-vn", "-c:a", "pcm_s16be"]
         case "flac": return ["-vn", "-c:a", "flac"]
-        case "ogg": return ["-vn", "-c:a", "libvorbis", "-q:a", "5"]
         case "opus": return ["-vn", "-c:a", "libopus", "-b:a", "128k"]
         default: return []
         }
@@ -34,7 +59,7 @@ enum MediaConversion {
 
     static func convert(_ input: URL, to target: String, output: URL, capabilities: Capabilities) throws {
         if capabilities.ffmpeg != nil {
-            try ffmpeg(capabilities, ["-i", input.path] + encoderArguments(for: target) + [output.path])
+            try ffmpeg(capabilities, ["-i", input.path] + encoderArguments(for: target, capabilities: capabilities) + [output.path])
             return
         }
         switch target {
@@ -148,7 +173,7 @@ enum MediaConversion {
         let (output, ext) = sameFormatOutput(input, tool: .normalizeAudio)
         try ffmpeg(capabilities, [
             "-i", input.path, "-af", "loudnorm=I=-16:TP=-1.5:LRA=11",
-        ] + encoderArguments(for: ext) + [output.path])
+        ] + encoderArguments(for: ext, capabilities: capabilities) + [output.path])
         return output
     }
 }

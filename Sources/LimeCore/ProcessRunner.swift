@@ -40,6 +40,21 @@ enum ProcessRunner {
         }
     }
 
+    /// Runs an executable and returns its stdout, or nil if it fails.
+    static func output(_ executable: URL, _ arguments: [String]) -> String? {
+        let process = Process()
+        process.executableURL = executable
+        process.arguments = arguments
+        let stdout = Pipe()
+        process.standardOutput = stdout
+        process.standardError = FileHandle.nullDevice
+        process.standardInput = FileHandle.nullDevice
+        guard (try? process.run()) != nil else { return nil }
+        let data = stdout.fileHandleForReading.readDataToEndOfFile()
+        process.waitUntilExit()
+        return process.terminationStatus == 0 ? String(decoding: data, as: UTF8.self) : nil
+    }
+
     static func system(_ path: String) -> URL { URL(fileURLWithPath: path) }
 }
 
