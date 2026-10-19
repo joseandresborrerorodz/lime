@@ -1,0 +1,58 @@
+import Foundation
+
+public enum SwivelError: LocalizedError, Equatable {
+    case unsupported(String)
+    case missingTool(String)
+    case toolFailed(String, String)
+    case failed(String)
+
+    public var errorDescription: String? {
+        switch self {
+        case .unsupported(let what): return "Not supported: \(what)"
+        case .missingTool(let name): return "\(name) is not installed. Install it with Homebrew: brew install \(name)"
+        case .toolFailed(let name, let output):
+            let detail = output.split(separator: "\n").last.map(String.init) ?? ""
+            return "\(name) failed. \(detail)"
+        case .failed(let message): return message
+        }
+    }
+}
+
+enum ProcessRunner {
+    /// Runs an executable to completion and throws with its stderr on failure.
+    static func run(_ executable: URL, _ arguments: [String], in directory: URL? = nil) throws {
+        let process = Process()
+        process.executableURL = executable
+        process.arguments = arguments
+        if let directory { process.currentDirectoryURL = directory }
+        let stderr = Pipe()
+        process.standardError = stderr
+        process.standardOutput = FileHandle.nullDevice
+        process.standardInput = FileHandle.nullDevice
+        try process.run()
+        let output = stderr.fileHandleForReading.readDataToEndOfFile()
+        process.waitUntilExit()
+        guard process.terminationStatus == 0 else {
+            throw SwivelError.toolFailed(
+                executable.lastPathComponent,
+                String(decoding: output, as: UTF8.self)
+            )
+        }
+    }
+
+    static func system(_ path: String) -> URL { URL(fileURLWithPath: path) }
+}
+
+/// Runs `body` on the main thread, synchronously, from any thread.
+func onMain<T>(_ body: () throws -> T) rethrows -> T {
+    if Thread.isMainThread { return try body() }
+    return try DispatchQueue.main.sync(execute: body)
+}
+
+/// A fresh scratch directory; the caller removes it when done.
+func makeScratchDirectory() throws -> URL {
+    let url = FileManager.default.temporaryDirectory
+        .appendingPathComponent("swivel-\(UUID().uuidString)", isDirectory: true)
+    try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+    return url
+}
