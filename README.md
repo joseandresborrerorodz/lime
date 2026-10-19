@@ -7,7 +7,7 @@ wheel of options opens around your pointer. Drop the file on a segment and the
 result is saved next to the original. Nothing is uploaded, and the app makes no
 network requests.
 
-<p align="center"><img src="docs/wheel.png" width="320" alt="The Convert wheel for a PNG"></p>
+<p align="center"><img src="docs/wheel.png" width="300" alt="The Convert wheel in light mode"> <img src="docs/wheel-dark.png" width="300" alt="The Convert wheel in dark mode"></p>
 
 | While dragging, tap | Wheel |
 |---|---|

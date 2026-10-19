@@ -1,4 +1,7 @@
 import AppKit
+import os
+
+let dragLog = Logger(subsystem: "io.github.joseandresborrerorodz.Lime", category: "drag")
 
 /// Which ring the wheel shows.
 enum WheelMode: CaseIterable {
@@ -51,6 +54,9 @@ final class DragWatcher {
         let handler: (NSEvent) -> Void = { [weak self] _ in self?.mouseDown() }
         if let global = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown, handler: handler) {
             monitors.append(global)
+            dragLog.notice("global mouse-down monitor installed")
+        } else {
+            dragLog.error("global mouse-down monitor could not be installed")
         }
         let local = NSEvent.addLocalMonitorForEvents(matching: .leftMouseDown) { event in
             handler(event)
@@ -67,6 +73,7 @@ final class DragWatcher {
 
     private func mouseDown() {
         changeCountAtMouseDown = dragPasteboard.changeCount
+        dragLog.notice("mouse down; drag pasteboard count \(self.changeCountAtMouseDown)")
         // Keys already held when the drag starts (e.g. ⌥ to copy) don't count as taps.
         previousFlags = NSEvent.modifierFlags.intersection(watchedKeys)
         timer?.invalidate()
@@ -86,8 +93,14 @@ final class DragWatcher {
         let pressed = flags.subtracting(previousFlags)
         previousFlags = flags
         guard let mode = WheelMode.allCases.first(where: { pressed == $0.key }) else { return }
-        guard dragPasteboard.changeCount != changeCountAtMouseDown else { return }
+        let count = dragPasteboard.changeCount
+        dragLog.notice("key tap \(mode.title, privacy: .public); pasteboard count \(count) (was \(self.changeCountAtMouseDown))")
+        guard count != changeCountAtMouseDown else {
+            dragLog.notice("ignored: no drag session started since mouse down")
+            return
+        }
         let files = draggedFiles()
+        dragLog.notice("drag carries \(files.count) file(s); types \(self.dragPasteboard.types?.map(\.rawValue).joined(separator: ",") ?? "none", privacy: .public)")
         guard !files.isEmpty else { return }
         onKeyTap?(mode, files, NSEvent.mouseLocation)
     }
