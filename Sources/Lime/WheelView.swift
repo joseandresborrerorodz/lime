@@ -28,7 +28,7 @@ struct WheelItem {
 enum Palette {
     static let accent = NSColor(calibratedRed: 0.60, green: 0.86, blue: 0.16, alpha: 1)
     static let accentDeep = NSColor(calibratedRed: 0.42, green: 0.76, blue: 0.10, alpha: 1)
-    static var segment: NSColor { .labelColor.withAlphaComponent(0.05) }
+    static var segment: NSColor { .labelColor.withAlphaComponent(0.035) }
     static var segmentEdge: NSColor { .labelColor.withAlphaComponent(0.08) }
     static var hairline: NSColor { .labelColor.withAlphaComponent(0.14) }
 }
@@ -217,7 +217,7 @@ final class WheelView: NSView {
     private func drawHub() {
         let radius = Self.innerRadius - 8
         let hub = NSBezierPath(ovalIn: NSRect(x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2))
-        NSColor.labelColor.withAlphaComponent(0.03).setFill()
+        NSColor.labelColor.withAlphaComponent(0.02).setFill()
         hub.fill()
         Palette.hairline.setStroke()
         hub.lineWidth = 0.5
@@ -324,13 +324,14 @@ final class WheelPanel: NSPanel {
             let glass = NSGlassEffectView(frame: frame)
             glass.cornerRadius = frame.width / 2
             glass.style = .clear
+            glass.alphaValue = 0.7
             return glass
         }
         let material = NSVisualEffectView(frame: frame)
         material.material = .hudWindow
         material.blendingMode = .behindWindow
         material.state = .active
-        material.alphaValue = 0.82
+        material.alphaValue = 0.65
         material.maskImage = NSImage(size: frame.size, flipped: false) { rect in
             NSColor.black.setFill()
             NSBezierPath(ovalIn: rect).fill()
