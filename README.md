@@ -1,4 +1,6 @@
-# Swivel
+<p align="center"><img src="docs/icon.png" width="128" alt="Lime icon"></p>
+
+# Lime: File Converter
 
 An open-source menu-bar file converter for macOS. Drag a file, tap a key, and a
 wheel of options opens around your pointer. Drop the file on a segment and the
@@ -48,10 +50,13 @@ brew install ffmpeg webp
 You need macOS 13 or later and Swift 5.10 or later (Xcode, or just the Command Line Tools).
 
 ```bash
-scripts/bundle.sh            # builds build/Swivel.app
-cp -R build/Swivel.app /Applications/
-open /Applications/Swivel.app
+scripts/bundle.sh            # builds build/Lime.app
+cp -R build/Lime.app /Applications/
+open /Applications/Lime.app
 ```
+
+The app icon is drawn in code (`LimeMark.swift`). To use a different artwork,
+run `scripts/make-icon.sh path/to/icon.png` with a square PNG, then rebuild.
 
 Run the tests:
 
@@ -61,11 +66,11 @@ scripts/test.sh
 
 ## How it works
 
-- `SwivelCore` is the conversion library. `Catalog` decides what to offer for a
+- `LimeCore` is the conversion library. `Catalog` decides what to offer for a
   selection, `Engine` runs it, and `OutputNaming` picks safe file names. It uses
   ImageIO, PDFKit, AVFoundation and TextKit, and runs `ffmpeg`, `cwebp`,
   `ditto` and `tar` as separate processes.
-- `Swivel` is the AppKit app. `DragWatcher` notices a mouse-down with a global
+- `Lime` is the AppKit app. `DragWatcher` notices a mouse-down with a global
   event monitor (no Accessibility permission needed), then polls the modifier
   keys and the system drag pasteboard while the button is held. `WheelPanel`
   is a borderless, non-activating window whose `WheelView` segments are

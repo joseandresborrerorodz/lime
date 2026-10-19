@@ -1,5 +1,5 @@
 import AppKit
-import SwivelCore
+import LimeCore
 
 /// Things done with the files themselves rather than to their contents.
 enum FileAction: CaseIterable {

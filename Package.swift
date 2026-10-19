@@ -2,15 +2,15 @@
 import PackageDescription
 
 let package = Package(
-    name: "Swivel",
+    name: "Lime",
     platforms: [.macOS(.v13)],
     products: [
-        .executable(name: "Swivel", targets: ["Swivel"]),
-        .library(name: "SwivelCore", targets: ["SwivelCore"]),
+        .executable(name: "Lime", targets: ["Lime"]),
+        .library(name: "LimeCore", targets: ["LimeCore"]),
     ],
     targets: [
-        .target(name: "SwivelCore"),
-        .executableTarget(name: "Swivel", dependencies: ["SwivelCore"]),
-        .testTarget(name: "SwivelCoreTests", dependencies: ["SwivelCore"]),
+        .target(name: "LimeCore"),
+        .executableTarget(name: "Lime", dependencies: ["LimeCore"]),
+        .testTarget(name: "LimeCoreTests", dependencies: ["LimeCore"]),
     ]
 )

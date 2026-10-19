@@ -10,7 +10,7 @@ enum ArchiveConversion {
         switch FileFormat.normalizedExtension(of: archive) {
         case "zip": try ProcessRunner.run(ditto, ["-x", "-k", archive.path, folder.path])
         case "tar", "tgz": try ProcessRunner.run(tar, ["-xf", archive.path, "-C", folder.path])
-        default: throw SwivelError.unsupported("extracting \(archive.lastPathComponent)")
+        default: throw LimeError.unsupported("extracting \(archive.lastPathComponent)")
         }
     }
 
@@ -41,7 +41,7 @@ enum ArchiveConversion {
             }
         case "tar": try ProcessRunner.run(tar, ["-cf", output.path, "-C", directory.path] + names)
         case "tgz": try ProcessRunner.run(tar, ["-czf", output.path, "-C", directory.path] + names)
-        default: throw SwivelError.unsupported("creating \(target) archives")
+        default: throw LimeError.unsupported("creating \(target) archives")
         }
     }
 

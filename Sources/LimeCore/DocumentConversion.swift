@@ -45,7 +45,7 @@ enum DocumentConversion {
         case "rtf": type = .rtf
         case "odt": type = .openDocument
         case "html": type = .html
-        default: throw SwivelError.unsupported("writing \(ext.uppercased()) documents")
+        default: throw LimeError.unsupported("writing \(ext.uppercased()) documents")
         }
         let data = try text.data(from: range, documentAttributes: [.documentType: type])
         try data.write(to: output)
@@ -57,7 +57,7 @@ enum DocumentConversion {
         let margin: CGFloat = 72
         let containerSize = CGSize(width: page.width - margin * 2, height: page.height - margin * 2)
         guard let context = CGContext(url as CFURL, mediaBox: &page, nil) else {
-            throw SwivelError.failed("Could not create \(url.lastPathComponent).")
+            throw LimeError.failed("Could not create \(url.lastPathComponent).")
         }
         let storage = NSTextStorage(attributedString: text)
         let layout = NSLayoutManager()

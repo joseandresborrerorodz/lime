@@ -4,7 +4,7 @@ import Foundation
 import ImageIO
 import PDFKit
 import Testing
-@testable import SwivelCore
+@testable import LimeCore
 
 /// End-to-end conversions on generated files, using only Apple frameworks.
 @Suite struct EngineTests {
@@ -75,7 +75,7 @@ import Testing
         let dir = try scratch()
         defer { try? FileManager.default.removeItem(at: dir) }
         let txt = dir.appendingPathComponent("notes.txt")
-        try String(repeating: "Swivel converts documents locally.\n", count: 200).write(to: txt, atomically: true, encoding: .utf8)
+        try String(repeating: "Lime converts documents locally.\n", count: 200).write(to: txt, atomically: true, encoding: .utf8)
 
         let docx = try #require(try engine.perform(.convert("docx"), on: [txt]).first)
         let back = try NSAttributedString(url: docx, options: [:], documentAttributes: nil)

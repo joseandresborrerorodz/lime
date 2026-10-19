@@ -1,6 +1,6 @@
 import Foundation
 
-/// Broad families of files Swivel knows how to handle.
+/// Broad families of files Lime knows how to handle.
 public enum FileCategory: String, CaseIterable, Sendable {
     case image, audio, video, pdf, document, spreadsheet, subtitle, archive
 }

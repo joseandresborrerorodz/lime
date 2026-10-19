@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import SwivelCore
+@testable import LimeCore
 
 @Suite struct FileFormatTests {
     @Test func normalizesAliasesAndDoubleExtensions() {

@@ -1,6 +1,6 @@
 import Foundation
 
-public enum SwivelError: LocalizedError, Equatable {
+public enum LimeError: LocalizedError, Equatable {
     case unsupported(String)
     case missingTool(String)
     case toolFailed(String, String)
@@ -33,7 +33,7 @@ enum ProcessRunner {
         let output = stderr.fileHandleForReading.readDataToEndOfFile()
         process.waitUntilExit()
         guard process.terminationStatus == 0 else {
-            throw SwivelError.toolFailed(
+            throw LimeError.toolFailed(
                 executable.lastPathComponent,
                 String(decoding: output, as: UTF8.self)
             )
@@ -52,7 +52,7 @@ func onMain<T>(_ body: () throws -> T) rethrows -> T {
 /// A fresh scratch directory; the caller removes it when done.
 func makeScratchDirectory() throws -> URL {
     let url = FileManager.default.temporaryDirectory
-        .appendingPathComponent("swivel-\(UUID().uuidString)", isDirectory: true)
+        .appendingPathComponent("lime-\(UUID().uuidString)", isDirectory: true)
     try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
     return url
 }

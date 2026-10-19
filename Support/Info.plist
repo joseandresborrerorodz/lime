@@ -5,15 +5,17 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Swivel</string>
+	<string>Lime: File Converter</string>
 	<key>CFBundleExecutable</key>
-	<string>Swivel</string>
+	<string>Lime</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
-	<string>io.github.swivel-app.Swivel</string>
+	<string>io.github.joseandresborrerorodz.Lime</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Swivel</string>
+	<string>Lime</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

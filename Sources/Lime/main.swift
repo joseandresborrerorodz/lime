@@ -1,7 +1,7 @@
 import AppKit
-import SwivelCore
+import LimeCore
 
-// `Swivel --snapshot out.png` renders a sample wheel, for docs and visual checks.
+// `Lime --snapshot out.png` renders a sample wheel, for docs and visual checks.
 if let flag = CommandLine.arguments.firstIndex(of: "--snapshot"), flag + 1 < CommandLine.arguments.count {
     let side = WheelPanel.side
     let view = WheelView(frame: NSRect(x: 0, y: 0, width: side, height: side))
@@ -12,6 +12,12 @@ if let flag = CommandLine.arguments.firstIndex(of: "--snapshot"), flag + 1 < Com
         try? rep.representation(using: .png, properties: [:])?
             .write(to: URL(fileURLWithPath: CommandLine.arguments[flag + 1]))
     }
+    exit(0)
+}
+
+// `Lime --icon out.png` renders the 1024 px app icon (used by scripts/make-icon.sh).
+if let flag = CommandLine.arguments.firstIndex(of: "--icon"), flag + 1 < CommandLine.arguments.count {
+    try? LimeMark.appIconPNG()?.write(to: URL(fileURLWithPath: CommandLine.arguments[flag + 1]))
     exit(0)
 }
 

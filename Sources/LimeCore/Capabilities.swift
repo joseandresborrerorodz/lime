@@ -1,6 +1,6 @@
 import Foundation
 
-/// Optional command-line engines found on this Mac. Swivel works without them
+/// Optional command-line engines found on this Mac. Lime works without them
 /// (Apple frameworks cover the basics) and offers more formats when present.
 public struct Capabilities: Sendable, Equatable {
     public var ffmpeg: URL?

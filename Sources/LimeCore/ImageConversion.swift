@@ -19,7 +19,7 @@ enum ImageConversion {
     static func source(_ url: URL) throws -> CGImageSource {
         guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
               CGImageSourceGetCount(source) > 0
-        else { throw SwivelError.failed("Could not read \(url.lastPathComponent) as an image.") }
+        else { throw LimeError.failed("Could not read \(url.lastPathComponent) as an image.") }
         return source
     }
 
@@ -36,7 +36,7 @@ enum ImageConversion {
             kCGImageSourceThumbnailMaxPixelSize: max(1, Int((max(width, height) * scale).rounded())),
         ]
         guard let image = CGImageSourceCreateThumbnailAtIndex(src, 0, options as CFDictionary) else {
-            throw SwivelError.failed("Could not decode \(url.lastPathComponent).")
+            throw LimeError.failed("Could not decode \(url.lastPathComponent).")
         }
         return image
     }
@@ -78,18 +78,18 @@ enum ImageConversion {
         }
         guard let type = utType(for: ext),
               let destination = CGImageDestinationCreateWithURL(url as CFURL, type.identifier as CFString, 1, nil)
-        else { throw SwivelError.unsupported("writing \(ext.uppercased()) images") }
+        else { throw LimeError.unsupported("writing \(ext.uppercased()) images") }
         var props = properties
         if let quality { props[kCGImageDestinationLossyCompressionQuality] = quality }
         let pixels = ["jpg", "bmp"].contains(ext) ? flattened(image) : image
         CGImageDestinationAddImage(destination, pixels, props as CFDictionary)
         guard CGImageDestinationFinalize(destination) else {
-            throw SwivelError.failed("Could not write \(url.lastPathComponent).")
+            throw LimeError.failed("Could not write \(url.lastPathComponent).")
         }
     }
 
     static func writeWebP(_ image: CGImage, to url: URL, quality: Double, capabilities: Capabilities) throws {
-        guard let cwebp = capabilities.cwebp else { throw SwivelError.missingTool("webp") }
+        guard let cwebp = capabilities.cwebp else { throw LimeError.missingTool("webp") }
         let scratch = try makeScratchDirectory()
         defer { try? FileManager.default.removeItem(at: scratch) }
         let png = scratch.appendingPathComponent("frame.png")
@@ -101,7 +101,7 @@ enum ImageConversion {
     static func writePDF(_ images: [CGImage], to url: URL) throws {
         guard let consumer = CGDataConsumer(url: url as CFURL),
               let context = CGContext(consumer: consumer, mediaBox: nil, nil)
-        else { throw SwivelError.failed("Could not create \(url.lastPathComponent).") }
+        else { throw LimeError.failed("Could not create \(url.lastPathComponent).") }
         for image in images {
             var box = CGRect(x: 0, y: 0, width: image.width, height: image.height)
             context.beginPage(mediaBox: &box)
@@ -121,13 +121,13 @@ enum ImageConversion {
         }
         let src = try source(input)
         guard let image = CGImageSourceCreateImageAtIndex(src, 0, nil) else {
-            throw SwivelError.failed("Could not decode \(input.lastPathComponent).")
+            throw LimeError.failed("Could not decode \(input.lastPathComponent).")
         }
         let props = CGImageSourceCopyPropertiesAtIndex(src, 0, nil) as? [CFString: Any] ?? [:]
         try write(image, to: output, ext: ext, properties: props, quality: 0.9, capabilities: capabilities)
     }
 
-    /// Output format for edits: keep the input format when Swivel can write it.
+    /// Output format for edits: keep the input format when Lime can write it.
     static func editFormat(for input: URL, capabilities: Capabilities) -> String {
         let ext = FileFormat.normalizedExtension(of: input)
         if utType(for: ext) != nil { return ext }
@@ -158,11 +158,11 @@ enum ImageConversion {
             data: nil, width: image.height, height: image.width, bitsPerComponent: 8,
             bytesPerRow: 0, space: CGColorSpace(name: CGColorSpace.sRGB)!,
             bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
-        else { throw SwivelError.failed("Could not rotate image.") }
+        else { throw LimeError.failed("Could not rotate image.") }
         context.translateBy(x: 0, y: CGFloat(image.width))
         context.rotate(by: -.pi / 2)
         context.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
-        guard let rotated = context.makeImage() else { throw SwivelError.failed("Could not rotate image.") }
+        guard let rotated = context.makeImage() else { throw LimeError.failed("Could not rotate image.") }
         return rotated
     }
 

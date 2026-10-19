@@ -28,7 +28,7 @@ enum MediaConversion {
     static let gifFilter = "fps=12,scale='min(720,iw)':-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse"
 
     static func ffmpeg(_ capabilities: Capabilities, _ arguments: [String]) throws {
-        guard let ffmpeg = capabilities.ffmpeg else { throw SwivelError.missingTool("ffmpeg") }
+        guard let ffmpeg = capabilities.ffmpeg else { throw LimeError.missingTool("ffmpeg") }
         try ProcessRunner.run(ffmpeg, quiet + arguments)
     }
 
@@ -45,7 +45,7 @@ enum MediaConversion {
         case "wav", "aiff", "caf":
             try writePCM(input, to: output, bigEndian: target == "aiff")
         default:
-            throw SwivelError.missingTool("ffmpeg")
+            throw LimeError.missingTool("ffmpeg")
         }
     }
 
@@ -60,7 +60,7 @@ enum MediaConversion {
 
     static func export(_ asset: AVAsset, preset: String, to output: URL, type: AVFileType) throws {
         guard let session = AVAssetExportSession(asset: asset, presetName: preset) else {
-            throw SwivelError.unsupported("this media with AVFoundation")
+            throw LimeError.unsupported("this media with AVFoundation")
         }
         session.outputURL = output
         session.outputFileType = type
@@ -70,7 +70,7 @@ enum MediaConversion {
         done.wait()
         if session.status != .completed {
             try? FileManager.default.removeItem(at: output)
-            throw SwivelError.failed(session.error?.localizedDescription ?? "Export failed.")
+            throw LimeError.failed(session.error?.localizedDescription ?? "Export failed.")
         }
     }
 
@@ -90,7 +90,7 @@ enum MediaConversion {
             forWriting: output, settings: settings,
             commonFormat: format.commonFormat, interleaved: format.isInterleaved)
         guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 32_768) else {
-            throw SwivelError.failed("Could not allocate an audio buffer.")
+            throw LimeError.failed("Could not allocate an audio buffer.")
         }
         while source.framePosition < source.length {
             try source.read(into: buffer)

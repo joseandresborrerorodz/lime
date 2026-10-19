@@ -1,5 +1,5 @@
 import Testing
-@testable import SwivelCore
+@testable import LimeCore
 
 @Suite struct SubtitleTests {
     let srt = "1\n00:00:01,000 --> 00:00:02,500\nHello\n\n2\n00:00:03,000 --> 00:00:04,000\n<i>World</i>\n"

@@ -5,9 +5,9 @@ import PDFKit
 enum PDFConversion {
     static func open(_ url: URL) throws -> PDFDocument {
         guard let document = PDFDocument(url: url) else {
-            throw SwivelError.failed("Could not open \(url.lastPathComponent) as a PDF.")
+            throw LimeError.failed("Could not open \(url.lastPathComponent) as a PDF.")
         }
-        if document.isLocked { throw SwivelError.failed("\(url.lastPathComponent) is password protected.") }
+        if document.isLocked { throw LimeError.failed("\(url.lastPathComponent) is password protected.") }
         return document
     }
 
@@ -20,13 +20,13 @@ enum PDFConversion {
             data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0,
             space: CGColorSpace(name: CGColorSpace.sRGB)!,
             bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)
-        else { throw SwivelError.failed("Could not render PDF page.") }
+        else { throw LimeError.failed("Could not render PDF page.") }
         context.setFillColor(CGColor(gray: 1, alpha: 1))
         context.fill(CGRect(x: 0, y: 0, width: width, height: height))
         context.scaleBy(x: scale, y: scale)
         context.translateBy(x: -bounds.minX, y: -bounds.minY)
         page.draw(with: .mediaBox, to: context)
-        guard let image = context.makeImage() else { throw SwivelError.failed("Could not render PDF page.") }
+        guard let image = context.makeImage() else { throw LimeError.failed("Could not render PDF page.") }
         return image
     }
 
@@ -66,7 +66,7 @@ enum PDFConversion {
         }
         let output = OutputNaming.uniqueURL(
             in: inputs[0].deletingLastPathComponent(), base: "Merged", extension: "pdf")
-        guard merged.write(to: output) else { throw SwivelError.failed("Could not write merged PDF.") }
+        guard merged.write(to: output) else { throw LimeError.failed("Could not write merged PDF.") }
         return output
     }
 

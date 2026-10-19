@@ -1,9 +1,9 @@
 import AppKit
-import SwivelCore
+import LimeCore
 
 struct WheelItem {
     enum Kind {
-        case operation(SwivelCore.Operation)
+        case operation(LimeCore.Operation)
         case action(FileAction)
     }
 
@@ -11,7 +11,7 @@ struct WheelItem {
     let symbol: String
     let kind: Kind
 
-    init(_ operation: SwivelCore.Operation) {
+    init(_ operation: LimeCore.Operation) {
         title = operation.title
         symbol = operation.symbol
         kind = .operation(operation)
@@ -25,7 +25,7 @@ struct WheelItem {
 }
 
 enum Palette {
-    static let accent = NSColor(calibratedRed: 0.22, green: 0.78, blue: 0.70, alpha: 1)
+    static let accent = NSColor(calibratedRed: 0.62, green: 0.90, blue: 0.10, alpha: 1)
     static let disc = NSColor(calibratedWhite: 0.07, alpha: 0.86)
     static let segment = NSColor(calibratedWhite: 1, alpha: 0.09)
     static let hub = NSColor(calibratedWhite: 0.03, alpha: 0.9)

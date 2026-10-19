@@ -1,13 +1,13 @@
 import AppKit
 import ServiceManagement
-import SwivelCore
+import LimeCore
 
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var statusItem: NSStatusItem!
     private let watcher = DragWatcher()
     private let panel = WheelPanel()
     private let hud = HUD()
-    private let work = DispatchQueue(label: "swivel.engine", qos: .userInitiated)
+    private let work = DispatchQueue(label: "lime.engine", qos: .userInitiated)
     private var capabilities = Capabilities.detect()
     private var files: [URL] = []
     private var lastResults: [URL] = []
@@ -19,7 +19,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        statusItem.button?.image = NSImage(systemSymbolName: "circle.circle", accessibilityDescription: "Swivel")
+        statusItem.button?.image = LimeMark.menuBarImage()
         let menu = NSMenu()
         menu.delegate = self
         statusItem.menu = menu
@@ -67,7 +67,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
 
-    private func run(_ operation: SwivelCore.Operation, on files: [URL]) {
+    private func run(_ operation: LimeCore.Operation, on files: [URL]) {
         let verb: String
         if case .convert(let target) = operation { verb = "Converting to \(FileFormat.label(for: target))" } else { verb = operation.title }
         hud.show("\(verb)…", busy: true, hideAfter: nil)
@@ -129,8 +129,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         login.state = SMAppService.mainApp.status == .enabled ? .on : .off
         menu.addItem(login)
         menu.addItem(.separator())
-        menu.addItem(item("About Swivel", #selector(about)))
-        menu.addItem(item("Quit Swivel", #selector(NSApplication.terminate(_:)), key: "q"))
+        menu.addItem(item("About Lime", #selector(about)))
+        menu.addItem(item("Quit Lime", #selector(NSApplication.terminate(_:)), key: "q"))
     }
 
     private func item(_ title: String, _ action: Selector?, key: String = "") -> NSMenuItem {
@@ -205,7 +205,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 try SMAppService.mainApp.register()
             }
         } catch {
-            hud.show("Launch at Login needs Swivel.app in Applications.", hideAfter: 4)
+            hud.show("Launch at Login needs Lime.app in Applications.", hideAfter: 4)
         }
     }
 

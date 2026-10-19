@@ -26,7 +26,7 @@ public struct Engine: Sendable {
     func convert(_ input: URL, to target: String) throws -> URL {
         let source = FileFormat.normalizedExtension(of: input)
         guard Catalog(capabilities: capabilities).targets(for: source).contains(target) else {
-            throw SwivelError.unsupported("\(source.uppercased()) to \(target.uppercased())")
+            throw LimeError.unsupported("\(source.uppercased()) to \(target.uppercased())")
         }
         let category = FileFormat.category(of: source)
         if category == .pdf, FileFormat.category(of: target) == .image {
@@ -54,7 +54,7 @@ public struct Engine: Sendable {
             case .archive:
                 try ArchiveConversion.convert(input, to: target, output: output)
             case nil:
-                throw SwivelError.unsupported(input.lastPathComponent)
+                throw LimeError.unsupported(input.lastPathComponent)
             }
         } catch {
             try? FileManager.default.removeItem(at: output)
@@ -81,7 +81,7 @@ public struct Engine: Sendable {
             case (.videoToGIF, .video): return try MediaConversion.gif(input, capabilities: capabilities)
             case (.normalizeAudio, .audio): return try MediaConversion.normalize(input, capabilities: capabilities)
             case (.extractArchive, .archive): return try ArchiveConversion.extract(input)
-            default: throw SwivelError.unsupported("\(tool.title) on \(input.lastPathComponent)")
+            default: throw LimeError.unsupported("\(tool.title) on \(input.lastPathComponent)")
             }
         }
     }

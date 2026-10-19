@@ -46,7 +46,7 @@ public enum TextFormats {
 
     public static func subtitles(_ text: String, to target: String) throws -> String {
         let cues = parseCues(text)
-        guard !cues.isEmpty else { throw SwivelError.failed("No subtitle cues were found.") }
+        guard !cues.isEmpty else { throw LimeError.failed("No subtitle cues were found.") }
         switch target {
         case "srt":
             return cues.enumerated().map { index, cue in
@@ -64,7 +64,7 @@ public enum TextFormats {
             }
             return stripped.joined(separator: "\n") + "\n"
         default:
-            throw SwivelError.unsupported("subtitles to \(target)")
+            throw LimeError.unsupported("subtitles to \(target)")
         }
     }
 
@@ -111,7 +111,7 @@ public enum TextFormats {
                 .split(separator: "\n", omittingEmptySubsequences: false)
                 .map { $0.split(separator: "\t", omittingEmptySubsequences: false).map(String.init) }
                 .filter { !($0.count == 1 && $0[0].isEmpty) }
-        default: throw SwivelError.unsupported("reading \(source)")
+        default: throw LimeError.unsupported("reading \(source)")
         }
         switch target {
         case "tsv":
@@ -127,7 +127,7 @@ public enum TextFormats {
                         : field
                 }.joined(separator: ",")
             }.joined(separator: "\n") + "\n"
-        default: throw SwivelError.unsupported("writing \(target)")
+        default: throw LimeError.unsupported("writing \(target)")
         }
     }
 }
