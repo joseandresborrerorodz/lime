@@ -9,6 +9,16 @@ network requests.
 
 <p align="center"><img src="docs/wheel.png" width="300" alt="The Convert wheel in light mode"> <img src="docs/wheel-dark.png" width="300" alt="The Convert wheel in dark mode"></p>
 
+## Install
+
+Paste this into Terminal (macOS 13 or later, Apple silicon or Intel):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/joseandresborrerorodz/lime/main/install.sh | bash
+```
+
+## Use
+
 | While dragging, tap | Wheel |
 |---|---|
 | ⇧ Shift | **Convert**: formats that fit the file |
